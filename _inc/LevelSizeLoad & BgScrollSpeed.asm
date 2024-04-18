@@ -7,10 +7,10 @@
 
 LevelSizeLoad:
 		moveq	#0,d0
-		move.b	d0,($FFFFF740).w
-		move.b	d0,($FFFFF741).w
-		move.b	d0,($FFFFF746).w
-		move.b	d0,($FFFFF748).w
+		move.b	d0,(v_unused7).w
+		move.b	d0,(v_unused8).w
+		move.b	d0,(v_unused9).w
+		move.b	d0,(v_unused10).w
 		move.b	d0,(v_dle_routine).w
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
@@ -20,7 +20,7 @@ LevelSizeLoad:
 		add.w	d1,d0
 		lea	LevelSizeArray(pc,d0.w),a0 ; load level	boundaries
 		move.w	(a0)+,d0
-		move.w	d0,($FFFFF730).w
+		move.w	d0,(v_unused11).w
 		move.l	(a0)+,d0
 		move.l	d0,(v_limitleft2).w
 		move.l	d0,(v_limitleft1).w
@@ -30,7 +30,7 @@ LevelSizeLoad:
 		move.w	(v_limitleft2).w,d0
 		addi.w	#$240,d0
 		move.w	d0,(v_limitleft3).w
-		move.w	#$1010,($FFFFF74A).w
+		move.w	#$1010,(v_fg_xblock).w ; and v_fg_yblock
 		move.w	(a0)+,d0
 		move.w	d0,(v_lookshift).w
 		bra.w	LevSz_ChkLamp
@@ -80,7 +80,7 @@ LevelSizeArray:
 ; Ending start location array
 ; ---------------------------------------------------------------------------
 EndingStLocArray:
-		include	"_inc\Start Location Array - Ending.asm"
+		include	"_inc/Start Location Array - Ending.asm"
 
 ; ===========================================================================
 
@@ -98,7 +98,7 @@ LevSz_StartLoc:
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
 		lsr.w	#4,d0
-		lea	StartLocArray(pc,d0.w),a1 ; MJ: load Sonic's start location address
+		lea	StartLocArray(pc,d0.w),a1 ; load Sonic's start location
 		tst.w	(f_demo).w	; is ending demo mode on?
 		bpl.s	LevSz_SonicPos	; if not, branch
 
@@ -114,48 +114,63 @@ LevSz_SonicPos:
 		moveq	#0,d0
 		move.w	(a1),d0
 		move.w	d0,(v_player+obY).w ; set Sonic's position on y-axis
-		move.b	(v_gamemode).w,d2			; MJ: load game mode
-		andi.w	#$FC,d2					; MJ: keep in range
-		cmpi.b	#4,d2					; MJ: is screen mode at title?
-		bne.s	SetScreen				; MJ: if not, branch
-		move.w	#$50,d1					; MJ: set positions for title screen
-		move.w	#$3B0,d0				; MJ: ''
-		move.w	d1,(v_player+obX).w			; MJ: save to object 1 so title screen follows
-		move.w	d0,(v_player+obY).w			; MJ: ''
 
 SetScreen:
-	LevSz_SkipStartPos:
+LevSz_SkipStartPos:
 		subi.w	#160,d1		; is Sonic more than 160px from left edge?
 		bcc.s	SetScr_WithinLeft ; if yes, branch
 		moveq	#0,d1
 
-	SetScr_WithinLeft:
+SetScr_WithinLeft:
 		move.w	(v_limitright2).w,d2
 		cmp.w	d2,d1		; is Sonic inside the right edge?
-		bcs.s	SetScr_WithinRight ; if yes, branch
+		blo.s	SetScr_WithinRight ; if yes, branch
 		move.w	d2,d1
 
-	SetScr_WithinRight:
+SetScr_WithinRight:
 		move.w	d1,(v_screenposx).w ; set horizontal screen position
 
 		subi.w	#96,d0		; is Sonic within 96px of upper edge?
 		bcc.s	SetScr_WithinTop ; if yes, branch
 		moveq	#0,d0
 
-	SetScr_WithinTop:
+SetScr_WithinTop:
 		cmp.w	(v_limitbtm2).w,d0 ; is Sonic above the bottom edge?
 		blt.s	SetScr_WithinBottom ; if yes, branch
 		move.w	(v_limitbtm2).w,d0
 
-	SetScr_WithinBottom:
+SetScr_WithinBottom:
 		move.w	d0,(v_screenposy).w ; set vertical screen position
 		bsr.w	BgScrollSpeed
+		moveq	#0,d0
+		move.b	(v_zone).w,d0
+		lsl.b	#2,d0
+		move.l	LoopTileNums(pc,d0.w),(v_256loop1).w
 		bra.w	LevSz_LoadScrollBlockSize
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Sonic start location array
 ; ---------------------------------------------------------------------------
-StartLocArray:	include	"_inc\Start Location Array - Levels.asm"
+StartLocArray:	include	"_inc/Start Location Array - Levels.asm"
+
+; ---------------------------------------------------------------------------
+; Which	256x256	tiles contain loops or roll-tunnels
+; ---------------------------------------------------------------------------
+
+LoopTileNums:
+
+; 		loop	loop	tunnel	tunnel
+
+	dc.b	$B5,	$7F,	$1F,	$20	; Green Hill
+	dc.b	$7F,	$7F,	$7F,	$7F	; Labyrinth
+	dc.b	$7F,	$7F,	$7F,	$7F	; Marble
+	dc.b	$AA,	$B4,	$7F,	$7F	; Star Light
+	dc.b	$7F,	$7F,	$7F,	$7F	; Spring Yard
+	dc.b	$7F,	$7F,	$7F,	$7F	; Scrap Brain
+	zonewarning LoopTileNums,4
+	dc.b	$7F,	$7F,	$7F,	$7F	; Ending (Green Hill)
+
+		even
 
 ; ===========================================================================
 ; LevSz_Unk:

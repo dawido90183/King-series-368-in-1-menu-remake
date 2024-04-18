@@ -11,7 +11,7 @@ Burrobot:
 Burro_Index:	dc.w Burro_Main-Burro_Index
 		dc.w Burro_Action-Burro_Index
 
-burro_timedelay:	equ $30		; time between direction changes
+burro_timedelay = objoff_30		; time between direction changes
 ; ===========================================================================
 
 Burro_Main:	; Routine 0
@@ -19,7 +19,7 @@ Burro_Main:	; Routine 0
 		move.b	#$13,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Burro,obMap(a0)
-		move.w	#$4A6,obGfx(a0)
+		move.w	#make_art_tile(ArtTile_Burrobot,0,0),obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#5,obColType(a0)
@@ -30,30 +30,30 @@ Burro_Main:	; Routine 0
 Burro_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
+		move.w	.index(pc,d0.w),d1
+		jsr	.index(pc,d1.w)
 		lea	(Ani_Burro).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-@index:		dc.w @changedir-@index
-		dc.w Burro_Move-@index
-		dc.w Burro_Jump-@index
-		dc.w Burro_ChkSonic-@index
+.index:		dc.w .changedir-.index
+		dc.w Burro_Move-.index
+		dc.w Burro_Jump-.index
+		dc.w Burro_ChkSonic-.index
 ; ===========================================================================
 
-@changedir:
+.changedir:
 		subq.w	#1,burro_timedelay(a0)
-		bpl.s	@nochg
+		bpl.s	.nochg
 		addq.b	#2,ob2ndRout(a0)
 		move.w	#255,burro_timedelay(a0)
 		move.w	#$80,obVelX(a0)
 		move.b	#1,obAnim(a0)
 		bchg	#0,obStatus(a0)	; change direction the Burrobot	is facing
-		beq.s	@nochg
+		beq.s	.nochg
 		neg.w	obVelX(a0)	; change direction the Burrobot	is moving
 
-	@nochg:
+.nochg:
 		rts	
 ; ===========================================================================
 
@@ -61,7 +61,7 @@ Burro_Move:
 		subq.w	#1,burro_timedelay(a0)
 		bmi.s	loc_AD84
 		bsr.w	SpeedToPos
-		bchg	#0,$32(a0)
+		bchg	#0,objoff_32(a0)
 		bne.s	loc_AD78
 		move.w	obX(a0),d3
 		addi.w	#$C,d3
@@ -126,7 +126,7 @@ Burro_ChkSonic:
 		sub.w	obY(a0),d0
 		bcc.s	locret_AE20
 		cmpi.w	#-$80,d0
-		bcs.s	locret_AE20
+		blo.s	locret_AE20
 		tst.w	(v_debuguse).w
 		bne.s	locret_AE20
 		subq.b	#2,ob2ndRout(a0)
