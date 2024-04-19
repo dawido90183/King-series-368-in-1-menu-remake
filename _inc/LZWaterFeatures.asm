@@ -457,12 +457,12 @@ Slide_Speeds:
 		dc.b -11
 		even
 
+Slide_Chunks:	dc.b $05,$06,$09,$0A				; MJ: Chunks to read (128x128 ID's)
+		dc.b $FA,$FB,$FC,$FD
+		dc.b $0B,$0C,$0D,$0E
+		dc.b $15,$16,$F8,$F9
+		dc.b $19,$1A,$1B,$1C
+		dc.b $17
 ; byte_3FCF:
-Slide_Chunks:	dc.b	$05,$06,$09,$0A				; MJ: Chunks to read (128x128 ID's)
-		dc.b	$FA,$FB,$FC,$FD
-		dc.b	$0B,$0C,$0D,$0E
-		dc.b	$15,$16,$F8,$F9
-		dc.b	$19,$1A,$1B,$1C
-		dc.b	$17
 Slide_Chunks_End
 		even

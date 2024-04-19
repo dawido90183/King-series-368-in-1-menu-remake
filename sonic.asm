@@ -5201,15 +5201,16 @@ LevelDataLoad:
 ; Level	layout loading subroutine
 ; ---------------------------------------------------------------------------
 
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-; This method now releases free ram space from A408 - A7FF
 
 LevelLayoutLoad:
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
-		lsr.w	#4,d0
+		lsr.w	#5,d0
 		lea	(Level_Index).l,a0
-		move.l	(a0,d0.w),a0
+		move.w	(a0,d0.w),d0
+		lea	(a0,d0.w),a0
 		lea	(v_lvllayout).w,a1
 		bra.w	KosDec			; MJ: decompress layout
 ; End of function LevelLayoutLoad
@@ -8986,36 +8987,45 @@ Art_SbzSmoke:	binclude	"artunc/SBZ Background Smoke.bin"
 
 ; ---------------------------------------------------------------------------
 ; Level	layout index
+; MJ: unused data and BG data have been stripped out
 ; ---------------------------------------------------------------------------
-Level_Index:	dc.l Level_GHZ1	; MJ: unused data and BG data have been stripped out
-		dc.l Level_GHZ2
-		dc.l Level_GHZ3
-		dc.l Level_Null
-		dc.l Level_LZ1
-		dc.l Level_LZ2
-		dc.l Level_LZ3
-		dc.l Level_SBZ3
-		dc.l Level_MZ1
-		dc.l Level_MZ2
-		dc.l Level_MZ3
-		dc.l Level_Null
-		dc.l Level_SLZ1
-		dc.l Level_SLZ2
-		dc.l Level_SLZ3
-		dc.l Level_Null
-		dc.l Level_SYZ1
-		dc.l Level_SYZ2
-		dc.l Level_SYZ3
-		dc.l Level_Null
-		dc.l Level_SBZ1
-		dc.l Level_SBZ2
-		dc.l Level_SBZ2
-		dc.l Level_Null
-		zonewarning Level_Index,16
-		dc.l Level_End
-		dc.l Level_End
-		dc.l Level_Null
-		dc.l Level_Null
+Level_Index:
+		; GHZ
+		dc.w Level_GHZ1-Level_Index
+		dc.w Level_GHZ2-Level_Index
+		dc.w Level_GHZ3-Level_Index
+		dc.w Level_Null-Level_Index
+		; LZ
+		dc.w Level_LZ1-Level_Index
+		dc.w Level_LZ2-Level_Index
+		dc.w Level_LZ3-Level_Index
+		dc.w Level_SBZ3-Level_Index
+		; MZ
+		dc.w Level_MZ1-Level_Index
+		dc.w Level_MZ2-Level_Index
+		dc.w Level_MZ3-Level_Index
+		dc.w Level_Null-Level_Index
+		; SLZ
+		dc.w Level_SLZ1-Level_Index
+		dc.w Level_SLZ2-Level_Index
+		dc.w Level_SLZ3-Level_Index
+		dc.w Level_Null-Level_Index
+		; SYZ
+		dc.w Level_SYZ1-Level_Index
+		dc.w Level_SYZ2-Level_Index
+		dc.w Level_SYZ3-Level_Index
+		dc.w Level_Null-Level_Index
+		; SBZ
+		dc.w Level_SBZ1-Level_Index
+		dc.w Level_SBZ2-Level_Index
+		dc.w Level_SBZ2-Level_Index
+		dc.w Level_Null-Level_Index
+		zonewarning Level_Index,8
+		; Ending
+		dc.w Level_End-Level_Index
+		dc.w Level_End-Level_Index
+		dc.w Level_Null-Level_Index
+		dc.w Level_Null-Level_Index
 
 Level_Null:
 

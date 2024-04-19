@@ -48,7 +48,7 @@ WFall_Animate:	; Routine 2
 		lea	(Ani_WFall).l,a1
 		jsr	(AnimateSprite).l
 
-WFall_ChkDel:	; Routine 4Slide_Speeds
+WFall_ChkDel:	; Routine 4
 		bra.w	RememberState
 ; ===========================================================================
 
