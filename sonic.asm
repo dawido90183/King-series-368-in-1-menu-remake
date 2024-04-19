@@ -7081,6 +7081,7 @@ Map_Drown:	include	"_maps/Drowning Countdown.asm"
 Map_Shield:	include	"_maps/Shield and Invincibility.asm"
 		include	"_anim/Special Stage Entry (Unused).asm"
 Map_Vanish:	include	"_maps/Special Stage Entry (Unused).asm"
+Map_PathSwapper: include "_maps/Collision Switcher.asm"
 		include	"_anim/Water Splash.asm"
 Map_Splash:	include	"_maps/Water Splash.asm"
 
