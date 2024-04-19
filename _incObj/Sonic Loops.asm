@@ -31,55 +31,7 @@ Sonic_Loops:
 		dbeq	d2,.loop	; MJ: check for each listed S-Tunnel chunk
 		beq.w	Sonic_ChkRoll	; MJ: if so, branch
 
-		bclr	#6,obRender(a0) ; return Sonic to high plane
-		rts	
-; ===========================================================================
-
-.chkifinair:
-		btst	#1,obStatus(a0)	; is Sonic in the air?
-		beq.s	.chkifleft	; if not, branch
-
-		bclr	#6,obRender(a0)	; return Sonic to high plane
-		rts	
-; ===========================================================================
-
-.chkifleft:
-		move.w	obX(a0),d2
-		cmpi.b	#$2C,d2
-		bhs.s	.chkifright
-
-		bclr	#6,obRender(a0)	; return Sonic to high plane
-		rts	
-; ===========================================================================
-
-.chkifright:
-		cmpi.b	#$E0,d2
-		blo.s	.chkangle1
-
-		bset	#6,obRender(a0)	; send Sonic to	low plane
-		rts	
-; ===========================================================================
-
-.chkangle1:
-		btst	#6,obRender(a0) ; is Sonic on low plane?
-		bne.s	.chkangle2	; if yes, branch
-
-		move.b	obAngle(a0),d1
-		beq.s	.done
-		cmpi.b	#$80,d1		; is Sonic upside-down?
-		bhi.s	.done		; if yes, branch
-		bset	#6,obRender(a0)	; send Sonic to	low plane
-		rts	
-; ===========================================================================
-
-.chkangle2:
-		move.b	obAngle(a0),d1
-		cmpi.b	#$80,d1		; is Sonic upright?
-		bls.s	.done		; if yes, branch
-		bclr	#6,obRender(a0)	; send Sonic to	high plane
-
 .noloops:
-.done:
 		rts	
 ; End of function Sonic_Loops
 
