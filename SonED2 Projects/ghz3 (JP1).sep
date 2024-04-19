@@ -56,9 +56,9 @@ Rotated Collision Array: ..\collide\Collision Array (Rotated).bin
 Angle Array:             ..\collide\Angle Map.bin
 
 Collision Index Format:      1
-Collision Index Compression: 0
-Collision Index 1:           ..\collide\GHZ1.bin
-Collision Index 2:           ..\collide\GHZ2.bin
+Collision Index Compression: 1
+Collision Index 1:           ..\collide\GHZ1.kos
+Collision Index 2:           ..\collide\GHZ2.kos
 
 Game Name: Sonic 1
 

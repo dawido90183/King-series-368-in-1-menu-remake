@@ -3085,11 +3085,16 @@ loc_3BC8:
 ColIndexLoad:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
-		lsl.w	#3,d0					; MJ: multiply by 8 not 4
-		move.l	ColPointers(pc,d0.w),(v_colladdr1).w	; MJ: get first collision set
-		addq.w	#4,d0					; MJ: increase to next location
-		move.l	ColPointers(pc,d0.w),(v_colladdr2).w	; MJ: get second collision set
-		rts	
+		lsl.w	#3,d0				; MJ: multiply by 8 not 4
+		move.l	#v_collision1&$FFFFFF,(v_collindex).w
+		move.w	d0,-(sp)
+		movea.l	ColPointers(pc,d0.w),a0		; MJ: get first collision set
+		lea	(v_collision1).w,a1
+		bsr.w	KosDec
+		move.w	(sp)+,d0
+		movea.l	ColPointers+4(pc,d0.w),a0	; MJ: get second collision set
+		lea	(v_collision2).w,a1
+		bra.w	KosDec
 ; End of function ColIndexLoad
 
 ; ===========================================================================
@@ -3800,8 +3805,12 @@ End_LoadData:
 		bset	#2,(v_fg_scroll_flags).w
 		bsr.w	LevelDataLoad
 		bsr.w	LoadTilesFromStart
-		move.l	#Col_GHZ_1,(v_colladdr1).w ; MJ: Set first collision for ending
-		move.l	#Col_GHZ_2,(v_colladdr2).w ; MJ: Set second collision for ending
+		lea	(Col_GHZ_1).l,a0 ; MJ: Set first collision for ending
+		lea	(v_collision1).w,a1
+		bsr.w	KosDec
+		lea	(Col_GHZ_2).l,a0 ; MJ: Set second collision for ending
+		lea	(v_collision2).w,a1
+		bsr.w	KosDec
 		enable_ints
 		lea	(Kos_EndFlowers).l,a0 ;	load extra flower patterns
 		lea	((v_128x128_end-$1000)&$FFFFFF).l,a1 ; RAM address to buffer the patterns
@@ -7205,10 +7214,10 @@ ConvertCollisionArray:
 
 
 Sonic_WalkSpeed:
-		move.l	(v_colladdr1).w,(v_collindex).w		; MJ: load first collision data location
+		move.l	#v_collision1&$FFFFFF,(v_collindex).w	; MJ: load first collision data location
 		cmpi.b	#$C,(v_top_solid_bit).w			; MJ: is second collision set to be used?
 		beq.s	.first					; MJ: if not, branch
-		move.l	(v_colladdr2).w,(v_collindex).w		; MJ: load second collision data location
+		move.l	#v_collision2&$FFFFFF,(v_collindex).w	; MJ: load second collision data location
 .first:
 		move.b	(v_lrb_solid_bit).w,d5			; MJ: load L/R/B soldity bit
 		move.l	obX(a0),d3
@@ -7266,10 +7275,10 @@ loc_14D3C:
 
 
 sub_14D48:
-		move.l	(v_colladdr1).w,(v_collindex).w		; MJ: load first collision data location
+		move.l	#v_collision1&$FFFFFF,(v_collindex).w	; MJ: load first collision data location
 		cmpi.b	#$C,(v_top_solid_bit).w			; MJ: is second collision set to be used?
 		beq.s	.first					; MJ: if not, branch
-		move.l	(v_colladdr2).w,(v_collindex).w		; MJ: load second collision data location
+		move.l	#v_collision2&$FFFFFF,(v_collindex).w	; MJ: load second collision data location
 .first:
 		move.b	(v_lrb_solid_bit).w,d5			; MJ: load L/R/B soldity bit
 		move.b	d0,(v_anglebuffer).w
@@ -7293,10 +7302,10 @@ sub_14D48:
 
 
 Sonic_HitFloor:
-		move.l	(v_colladdr1).w,(v_collindex).w		; MJ: load first collision data location
+		move.l	#v_collision1&$FFFFFF,(v_collindex).w	; MJ: load first collision data location
 		cmpi.b	#$C,(v_top_solid_bit).w			; MJ: is second collision set to be used?
 		beq.s	.first					; MJ: if not, branch
-		move.l	(v_colladdr2).w,(v_collindex).w		; MJ: load second collision data location
+		move.l	#v_collision2&$FFFFFF,(v_collindex).w	; MJ: load second collision data location
 .first:
 		move.b	(v_top_solid_bit).w,d5			; MJ: load L/R/B soldity bit
 		move.w	obY(a0),d2
@@ -8912,29 +8921,29 @@ CollArray1:	binclude	"collide/Collision Array (Normal).bin"
 		even
 CollArray2:	binclude	"collide/Collision Array (Rotated).bin"
 		even
-Col_GHZ_1:	binclude	"collide/GHZ1.bin"	; GHZ index 1
+Col_GHZ_1:	binclude	"collide/GHZ1.kos"	; GHZ index 1
 		even
-Col_GHZ_2:	binclude	"collide/GHZ2.bin"	; GHZ index 2
+Col_GHZ_2:	binclude	"collide/GHZ2.kos"	; GHZ index 2
 		even
-Col_LZ_1:	binclude	"collide/LZ1.bin"	; LZ index 1
+Col_LZ_1:	binclude	"collide/LZ1.kos"	; LZ index 1
 		even
-Col_LZ_2:	binclude	"collide/LZ2.bin"	; LZ index 2
+Col_LZ_2:	binclude	"collide/LZ2.kos"	; LZ index 2
 		even
-Col_MZ_1:	binclude	"collide/MZ1.bin"	; MZ index 1
+Col_MZ_1:	binclude	"collide/MZ1.kos"	; MZ index 1
 		even
-Col_MZ_2:	binclude	"collide/MZ2.bin"	; MZ index 2
+Col_MZ_2:	binclude	"collide/MZ2.kos"	; MZ index 2
 		even
-Col_SLZ_1:	binclude	"collide/SLZ1.bin"	; SLZ index 1
+Col_SLZ_1:	binclude	"collide/SLZ1.kos"	; SLZ index 1
 		even
-Col_SLZ_2:	binclude	"collide/SLZ2.bin"	; SLZ index 2
+Col_SLZ_2:	binclude	"collide/SLZ2.kos"	; SLZ index 2
 		even
-Col_SYZ_1:	binclude	"collide/SYZ1.bin"	; SYZ index 1
+Col_SYZ_1:	binclude	"collide/SYZ1.kos"	; SYZ index 1
 		even
-Col_SYZ_2:	binclude	"collide/SYZ2.bin"	; SYZ index 2
+Col_SYZ_2:	binclude	"collide/SYZ2.kos"	; SYZ index 2
 		even
-Col_SBZ_1:	binclude	"collide/SBZ1.bin"	; SBZ index 1
+Col_SBZ_1:	binclude	"collide/SBZ1.kos"	; SBZ index 1
 		even
-Col_SBZ_2:	binclude	"collide/SBZ2.bin"	; SBZ index 2
+Col_SBZ_2:	binclude	"collide/SBZ2.kos"	; SBZ index 2
 		even
 ; ---------------------------------------------------------------------------
 ; Special Stage layouts
