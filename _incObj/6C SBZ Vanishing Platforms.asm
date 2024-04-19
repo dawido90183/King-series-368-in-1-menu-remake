@@ -13,14 +13,14 @@ VanP_Index:	dc.w VanP_Main-VanP_Index
 		dc.w VanP_Appear-VanP_Index
 		dc.w loc_16068-VanP_Index
 
-vanp_timer:	equ $30		; counter for time until event
-vanp_timelen:	equ $32		; time between events (general)
+vanp_timer = objoff_30		; counter for time until event
+vanp_timelen = objoff_32	; time between events (general)
 ; ===========================================================================
 
 VanP_Main:	; Routine 0
 		addq.b	#6,obRoutine(a0)
 		move.l	#Map_VanP,obMap(a0)
-		move.w	#$44C3,obGfx(a0)
+		move.w	#make_art_tile(ArtTile_SBZ_Vanishing_Block,2,0),obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)
@@ -39,20 +39,20 @@ VanP_Main:	; Routine 0
 		addi.w	#$80,d1
 		mulu.w	d1,d0
 		lsr.l	#8,d0
-		move.w	d0,$36(a0)
+		move.w	d0,objoff_36(a0)
 		subq.w	#1,d1
-		move.w	d1,$38(a0)
+		move.w	d1,objoff_38(a0)
 
 loc_16068:	; Routine 6
 		move.w	(v_framecount).w,d0
-		sub.w	$36(a0),d0
-		and.w	$38(a0),d0
-		bne.s	@animate
+		sub.w	objoff_36(a0),d0
+		and.w	objoff_38(a0),d0
+		bne.s	.animate
 		subq.b	#4,obRoutine(a0) ; goto VanP_Vanish next
 		bra.s	VanP_Vanish
 ; ===========================================================================
 
-@animate:
+.animate:
 		lea	(Ani_Van).l,a1
 		jsr	(AnimateSprite).l
 		bra.w	RememberState
@@ -61,29 +61,29 @@ loc_16068:	; Routine 6
 VanP_Vanish:	; Routine 2
 VanP_Appear:	; Routine 4
 		subq.w	#1,vanp_timer(a0)
-		bpl.s	@wait
+		bpl.s	.wait
 		move.w	#127,vanp_timer(a0)
 		tst.b	obAnim(a0)	; is platform vanishing?
-		beq.s	@isvanishing	; if yes, branch
+		beq.s	.isvanishing	; if yes, branch
 		move.w	vanp_timelen(a0),vanp_timer(a0)
 
-	@isvanishing:
+.isvanishing:
 		bchg	#0,obAnim(a0)
 
-	@wait:
+.wait:
 		lea	(Ani_Van).l,a1
 		jsr	(AnimateSprite).l
 		btst	#1,obFrame(a0)	; has platform vanished?
-		bne.s	@notsolid	; if yes, branch
+		bne.s	.notsolid	; if yes, branch
 		cmpi.b	#2,obRoutine(a0)
-		bne.s	@loc_160D6
+		bne.s	.loc_160D6
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		jsr	(PlatformObject).l
 		bra.w	RememberState
 ; ===========================================================================
 
-@loc_160D6:
+.loc_160D6:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		jsr	(ExitPlatform).l
@@ -92,14 +92,14 @@ VanP_Appear:	; Routine 4
 		bra.w	RememberState
 ; ===========================================================================
 
-@notsolid:
+.notsolid:
 		btst	#3,obStatus(a0)
-		beq.s	@display
+		beq.s	.display
 		lea	(v_player).w,a1
 		bclr	#3,obStatus(a1)
 		bclr	#3,obStatus(a0)
 		move.b	#2,obRoutine(a0)
 		clr.b	obSolid(a0)
 
-	@display:
+.display:
 		bra.w	RememberState

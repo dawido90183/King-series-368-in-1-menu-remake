@@ -11,16 +11,16 @@ BigSpikeBall:
 BBall_Index:	dc.w BBall_Main-BBall_Index
 		dc.w BBall_Move-BBall_Index
 
-bball_origX:	equ $3A		; original x-axis position
-bball_origY:	equ $38		; original y-axis position
-bball_radius:	equ $3C		; radius of circle
-bball_speed:	equ $3E		; speed
+bball_origX = objoff_3A		; original x-axis position
+bball_origY = objoff_38		; original y-axis position
+bball_radius = objoff_3C	; radius of circle
+bball_speed = objoff_3E		; speed
 ; ===========================================================================
 
 BBall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_BBall,obMap(a0)
-		move.w	#$396,obGfx(a0)
+		move.w	#make_art_tile(ArtTile_SYZ_Big_Spikeball,0,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -43,54 +43,54 @@ BBall_Move:	; Routine 2
 		move.b	obSubtype(a0),d0 ; get object type
 		andi.w	#7,d0		; read only the	2nd digit
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
+		move.w	.index(pc,d0.w),d1
+		jsr	.index(pc,d1.w)
 		out_of_range.w	DeleteObject,bball_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-@index:		dc.w @type00-@index
-		dc.w @type01-@index
-		dc.w @type02-@index
-		dc.w @type03-@index
+.index:		dc.w .type00-.index
+		dc.w .type01-.index
+		dc.w .type02-.index
+		dc.w .type03-.index
 ; ===========================================================================
 
-@type00:
+.type00:
 		rts	
 ; ===========================================================================
 
-@type01:
+.type01:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
 		btst	#0,obStatus(a0)
-		beq.s	@noflip1
+		beq.s	.noflip1
 		neg.w	d0
 		add.w	d1,d0
 
-	@noflip1:
+.noflip1:
 		move.w	bball_origX(a0),d1
 		sub.w	d0,d1
 		move.w	d1,obX(a0)	; move object horizontally
 		rts	
 ; ===========================================================================
 
-@type02:
+.type02:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
 		btst	#0,obStatus(a0)
-		beq.s	@noflip2
+		beq.s	.noflip2
 		neg.w	d0
 		addi.w	#$80,d0
 
-	@noflip2:
+.noflip2:
 		move.w	bball_origY(a0),d1
 		sub.w	d0,d1
 		move.w	d1,obY(a0)	; move object vertically
 		rts	
 ; ===========================================================================
 
-@type03:
+.type03:
 		move.w	bball_speed(a0),d0
 		add.w	d0,obAngle(a0)
 		move.b	obAngle(a0),d0

@@ -15,44 +15,55 @@ Sonic_LevelBound:
 		move.w	(v_limitleft2).w,d0
 		addi.w	#$10,d0
 		cmp.w	d1,d0		; has Sonic touched the	side boundary?
-		bhi.s	@sides		; if yes, branch
+		bhi.s	.sides		; if yes, branch
 		move.w	(v_limitright2).w,d0
 		addi.w	#$128,d0
 		tst.b	(f_lockscreen).w
-		bne.s	@screenlocked
+		bne.s	.screenlocked
 		addi.w	#$40,d0
 
-	@screenlocked:
+.screenlocked:
 		cmp.w	d1,d0		; has Sonic touched the	side boundary?
-		bls.s	@sides		; if yes, branch
+		bls.s	.sides		; if yes, branch
 
-	@chkbottom:
+.chkbottom:
 		move.w	(v_limitbtm2).w,d0
-		addi.w	#$E0,d0
+	if FixBugs
+		; The original code does not consider that the camera boundary
+		; may be in the middle of lowering itself, which is why going
+		; down the S-tunnel in Green Hill Zone Act 1 fast enough can
+		; kill Sonic.
+		move.w	(v_limitbtm1).w,d1
+		cmp.w	d0,d1
+		blo.s	.skip
+		move.w	d1,d0
+.skip:
+	endif
+		addi.w	#224,d0
 		cmp.w	obY(a0),d0	; has Sonic touched the	bottom boundary?
-		blt.s	@bottom		; if yes, branch
+		blt.s	.bottom		; if yes, branch
 		rts	
 ; ===========================================================================
 
-@bottom:
+.bottom:
 		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w ; is level SBZ2 ?
-		bne.s	@killsonic	; if not, kill Sonic	; MJ: Fix out-of-range branch
+		bne.s	.killsonic	; if not, kill Sonic	; MJ: Fix out-of-range branch
 		cmpi.w	#$2000,(v_player+obX).w
-		bcs.s	@killsonic				; MJ: Fix out-of-range branch
+		bcs.s	.killsonic				; MJ: Fix out-of-range branch
 		clr.b	(v_lastlamp).w	; clear	lamppost counter
 		move.w	#1,(f_restart).w ; restart the level
 		move.w	#(id_LZ<<8)+3,(v_zone).w ; set level to SBZ3 (LZ4)
 		rts	
 ; ===========================================================================
 
-@sides:
+.sides:
 		move.w	d0,obX(a0)
 		move.w	#0,obX+2(a0)
 		move.w	#0,obVelX(a0)	; stop Sonic moving
 		move.w	#0,obInertia(a0)
-		bra.s	@chkbottom
+		bra.s	.chkbottom
 ; ===========================================================================
 
-@killsonic:
+.killsonic:
 		jmp	(KillSonic).l	; MJ: Fix out-of-range branch
 ; End of function Sonic_LevelBound

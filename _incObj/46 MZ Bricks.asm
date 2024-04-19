@@ -11,7 +11,7 @@ MarbleBrick:
 Brick_Index:	dc.w Brick_Main-Brick_Index
 		dc.w Brick_Action-Brick_Index
 
-brick_origY:	equ $30
+brick_origY = objoff_30
 ; ===========================================================================
 
 Brick_Main:	; Routine 0
@@ -19,16 +19,16 @@ Brick_Main:	; Routine 0
 		move.b	#$F,obHeight(a0)
 		move.b	#$F,obWidth(a0)
 		move.l	#Map_Brick,obMap(a0)
-		move.w	#$4000,obGfx(a0)
+		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$10,obActWid(a0)
 		move.w	obY(a0),brick_origY(a0)
-		move.w	#$5C0,$32(a0)
+		move.w	#$5C0,objoff_32(a0)
 
 Brick_Action:	; Routine 2
 		tst.b	obRender(a0)
-		bpl.s	@chkdel
+		bpl.s	.chkdel
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0 ; get object type
 		andi.w	#7,d0		; read only the	1st digit
@@ -41,7 +41,7 @@ Brick_Action:	; Routine 2
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
 
-	@chkdel:
+.chkdel:
 		if Revision=0
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
@@ -49,7 +49,7 @@ Brick_Action:	; Routine 2
 		else
 			out_of_range.w	DeleteObject
 			bra.w	DisplaySprite
-		endc
+		endif
 ; ===========================================================================
 Brick_TypeIndex:dc.w Brick_Type00-Brick_TypeIndex
 		dc.w Brick_Type01-Brick_TypeIndex
@@ -70,7 +70,7 @@ Brick_Type02:
 
 loc_E888:
 		cmpi.w	#$90,d0		; is Sonic within $90 pixels of	the block?
-		bcc.s	Brick_Type01	; if not, resume wobbling
+		bhs.s	Brick_Type01	; if not, resume wobbling
 		move.b	#3,obSubtype(a0)	; if yes, make the block fall
 
 Brick_Type01:
@@ -104,7 +104,7 @@ Brick_Type03:
 		cmpi.w	#$2E8,d0
 		else
 			cmpi.w	#$16A,d0
-		endc
+		endif
 		bcc.s	locret_E8EE
 		move.b	#0,obSubtype(a0)
 
