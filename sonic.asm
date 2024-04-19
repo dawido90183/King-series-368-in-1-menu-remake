@@ -3813,7 +3813,7 @@ End_LoadData:
 		bsr.w	KosDec
 		enable_ints
 		lea	(Kos_EndFlowers).l,a0 ;	load extra flower patterns
-		lea	((v_128x128_end-$1000)&$FFFFFF).l,a1 ; RAM address to buffer the patterns
+		lea	((v_128x128+$1000)&$FFFFFF).l,a1 ; RAM address to buffer the patterns
 		bsr.w	KosDec
 		moveq	#palid_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
