@@ -169,7 +169,7 @@ DynWater_LZ3:
 		bhs.s	.setwaterlz3	; if not, branch
 
 		move.w	#$4C8,d1	; set new water height
-		move.l	#Level_LZ3,(v_lvllayoutfg).w ; MJ: Set normal version of act 3's layout to be read
+		move.l	#Level_LZ3,(v_lvllayout).w ; MJ: Set normal version of act 3's layout to be read
 		move.b	#1,(v_wtr_routine).w ; use second routine next
 		move.w	#sfx_Rumbling,d0
 		bsr.w	PlaySound_Special ; play sound $B7 (rumbling)
@@ -400,7 +400,7 @@ LZWaterSlides:
 		lsr.w	#7,d1			; MJ: divide X position by 80 (00 = 0, 80 = 1, etc)
 		andi.w	#$7F,d1			; MJ: keep within 4000 pixels (4000 / 80 = 80)
 		add.w	d1,d0			; MJ: add together
-		movea.l	(v_lvllayoutfg).w,a2	; MJ: Load address of layout
+		movea.l	(v_lvllayout).w,a2	; MJ: Load address of layout
 		move.b	(a2,d0.w),d0		; MJ: collect correct chunk ID based on the position of Sonic
 		lea	Slide_Chunks_End(pc),a2
 		moveq	#Slide_Chunks_End-Slide_Chunks-1,d1

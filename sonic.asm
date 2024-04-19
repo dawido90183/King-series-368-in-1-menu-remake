@@ -2178,7 +2178,8 @@ Tit_LoadText:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bgscreenposx).w,a3
-		movea.l	(v_lvllayoutbg).w,a4	; MJ: Load address of layout BG
+		movea.l	(v_lvllayout).w,a4
+		lea	$80(a4),a4		; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	DrawChunks
 		lea	(v_128x128&$FFFFFF).l,a1
@@ -3904,11 +3905,11 @@ End_SlowFade:
 		tst.w	(f_restart).w
 		beq.w	End_AllEmlds
 		clr.w	(f_restart).w
-		move.l	#Level_EndGood,(v_lvllayoutfg).w ; MJ: set extra flowers version of ending's layout to be read
+		move.l	#Level_EndGood,(v_lvllayout).w ; MJ: set extra flowers version of ending's layout to be read
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_screenposx).w,a3
-		movea.l	(v_lvllayoutfg).w,a4	; MJ: Load address of layout
+		movea.l	(v_lvllayout).w,a4	; MJ: Load address of layout
 		move.w	#$4000,d2
 		bsr.w	DrawChunks
 		moveq	#palid_Ending,d0
@@ -4193,7 +4194,8 @@ LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
 		lea	(v_bgscreenposx).w,a3
-		movea.l	(v_lvllayoutbg).w,a4	; MJ: Load address of layout BG
+		movea.l	(v_lvllayout).w,a4
+		lea	$80(a4),a4			; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
@@ -4214,7 +4216,8 @@ LoadTilesAsYouMove:
 		; First, update the background
 		lea	(v_bg1_scroll_flags_dup).w,a2	; Scroll block 1 scroll flags
 		lea	(v_bgscreenposx_dup).w,a3	; Scroll block 1 X coordinate
-		movea.l	(v_lvllayoutbg).w,a4		; MJ: Load address of layout BG
+		movea.l	(v_lvllayout).w,a4
+		lea	$80(a4),a4			; MJ: Load address of layout BG
 		move.w	#$6000,d2			; VRAM thing for selecting Plane B
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags_dup).w,a2	; Scroll block 2 scroll flags
@@ -4230,7 +4233,7 @@ LoadTilesAsYouMove:
 		; Then, update the foreground
 		lea	(v_fg_scroll_flags_dup).w,a2	; Foreground scroll flags
 		lea	(v_screenposx_dup).w,a3		; Foreground X coordinate
-		movea.l	(v_lvllayoutfg).w,a4		; MJ: Load address of layout
+		movea.l	(v_lvllayout).w,a4		; MJ: Load address of layout
 		move.w	#$4000,d2			; VRAM thing for selecting Plane A
 		; The FG's update function is inlined here
 		tst.b	(a2)
@@ -5022,11 +5025,12 @@ LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_screenposx).w,a3
-		movea.l	(v_lvllayoutfg).w,a4	; MJ: Load address of layout
+		movea.l	(v_lvllayout).w,a4	; MJ: Load address of layout
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
 		lea	(v_bgscreenposx).w,a3
-		movea.l	(v_lvllayoutbg).w,a4	; MJ: Load address of layout BG
+		movea.l	(v_lvllayout).w,a4
+		lea	$80(a4),a4		; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		if Revision<>0
 			tst.b	(v_zone).w
@@ -5199,10 +5203,7 @@ LevelLayoutLoad:
 		lsl.b	#6,d0
 		lsr.w	#4,d0
 		lea	(Level_Index).l,a1
-		movea.l	(a1,d0.w),a1		; MJ: moving the address strait to a1 rather than adding a word to an address
-		move.l	a1,(v_lvllayoutfg).w	; MJ: save location of layout to $FFFFA400
-		lea	$80(a1),a1		; MJ: add 80 (As the BG line is always after the FG line)
-		move.l	a1,(v_lvllayoutbg).w	; MJ: save location of layout to $FFFFA404
+		move.l	(a1,d0.w),(v_lvllayout).w	; MJ: save location of layout
 		rts				; MJ: Return
 ; End of function LevelLayoutLoad
 

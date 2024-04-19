@@ -20,7 +20,7 @@ Sonic_Loops:
 		lsr.w	#7,d1			; MJ: divide X position by 80 (00 = 0, 80 = 1, etc)
 		andi.w	#$7F,d1			; MJ: keep within 4000 pixels (4000 / 80 = 80)
 		add.w	d1,d0			; MJ: add together
-		movea.l	(v_lvllayoutfg).w,a1	; MJ: Load address of layout
+		movea.l	(v_lvllayout).w,a1	; MJ: Load address of layout
 		move.b	(a1,d0.w),d1		; MJ: collect correct 128x128 chunk ID based on the position of Sonic
 
 		lea	STunnel_Chunks_End(pc),a2			; MJ: lead list of S-Tunnel chunks

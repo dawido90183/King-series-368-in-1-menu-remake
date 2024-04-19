@@ -10,9 +10,8 @@ v_ram_start:
 v_128x128:		ds.b	$100*$80	; 128x128 tile mappings ($100 chunks)
 v_128x128_end:
 			ds.b	$2400		; unused
-v_lvllayoutfg:		ds.l	1		; level layout ROM address
-v_lvllayoutbg:		ds.l	1		; background layout ROM address
-			ds.b	$3F8		; unused
+v_lvllayout:		ds.l	1		; level layout ROM address
+			ds.b	$3FC		; unused
 
 v_bgscroll_buffer:	ds.b	$200		; background scroll buffer
 v_ngfx_buffer:		ds.b	$200		; Nemesis graphics decompression buffer
