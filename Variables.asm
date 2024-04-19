@@ -9,8 +9,9 @@ v_ram_start:
 
 v_128x128:		ds.b	$100*$80	; 128x128 tile mappings ($100 chunks)
 v_128x128_end:
-			ds.b	$2800		; unused
 
+v_lvllayout:		ds.b	$1000		; level and background layouts
+			ds.b	$1800		; unused
 v_bgscroll_buffer:	ds.b	$200		; background scroll buffer
 v_ngfx_buffer:		ds.b	$200		; Nemesis graphics decompression buffer
 v_ngfx_buffer_end:
@@ -481,12 +482,11 @@ v_scorecopy:		ds.l	1		; score, duplicate
 	else
 v_scorelife:		ds.l	1		; points required for an extra life (JP1 only)
 	endif
-v_lvllayout:		ds.l	1		; level layout ROM address
 v_colladdr1:		ds.l	1
 v_colladdr2:		ds.l	1
 v_top_solid_bit:	ds.b	1
 v_lrb_solid_bit:	ds.b	1
-			ds.b	$E		; unused
+			ds.b	$12		; unused
 f_levselcheat:		ds.b	1		; level select cheat flag
 f_slomocheat:		ds.b	1		; slow motion & frame advance cheat flag
 f_debugcheat:		ds.b	1		; debug mode cheat flag

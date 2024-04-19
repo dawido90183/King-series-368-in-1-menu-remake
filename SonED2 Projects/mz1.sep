@@ -22,9 +22,9 @@ Page0 16x16 Page:      0
 Metatile Tiles Page 0: ..\map128\MZ.kos
 
 Layout Format:         1
-Layout Compression:    0
+Layout Compression:    1
 BG 128x128 Page:       0
-FG Level Layout:       ..\levels\mz1.bin
+FG Level Layout:       ..\levels\mz1.kos
 
 Objects Format:        1
 Objects:               ..\objpos\mz1.bin

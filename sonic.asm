@@ -2178,8 +2178,7 @@ Tit_LoadText:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bgscreenposx).w,a3
-		movea.l	(v_lvllayout).w,a4
-		lea	$80(a4),a4		; MJ: Load address of layout BG
+		lea	(v_lvllayout+$80).w,a4	; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	DrawChunks
 		lea	(v_128x128&$FFFFFF).l,a1
@@ -3905,11 +3904,12 @@ End_SlowFade:
 		tst.w	(f_restart).w
 		beq.w	End_AllEmlds
 		clr.w	(f_restart).w
-		move.l	#Level_EndGood,(v_lvllayout).w ; MJ: set extra flowers version of ending's layout to be read
+		move.l	#$AAABAE9A,(v_lvllayout+$200).w ; MJ: modify level layout
+		move.l	#$ACADAFB0,(v_lvllayout+$300).w
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_screenposx).w,a3
-		movea.l	(v_lvllayout).w,a4	; MJ: Load address of layout
+		lea	(v_lvllayout).w,a4
 		move.w	#$4000,d2
 		bsr.w	DrawChunks
 		moveq	#palid_Ending,d0
@@ -4194,8 +4194,7 @@ LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
 		lea	(v_bgscreenposx).w,a3
-		movea.l	(v_lvllayout).w,a4
-		lea	$80(a4),a4			; MJ: Load address of layout BG
+		lea	(v_lvllayout+$80).w,a4		; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
@@ -4216,8 +4215,7 @@ LoadTilesAsYouMove:
 		; First, update the background
 		lea	(v_bg1_scroll_flags_dup).w,a2	; Scroll block 1 scroll flags
 		lea	(v_bgscreenposx_dup).w,a3	; Scroll block 1 X coordinate
-		movea.l	(v_lvllayout).w,a4
-		lea	$80(a4),a4			; MJ: Load address of layout BG
+		lea	(v_lvllayout+$80).w,a4		; MJ: Load address of layout BG
 		move.w	#$6000,d2			; VRAM thing for selecting Plane B
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags_dup).w,a2	; Scroll block 2 scroll flags
@@ -4233,7 +4231,7 @@ LoadTilesAsYouMove:
 		; Then, update the foreground
 		lea	(v_fg_scroll_flags_dup).w,a2	; Foreground scroll flags
 		lea	(v_screenposx_dup).w,a3		; Foreground X coordinate
-		movea.l	(v_lvllayout).w,a4		; MJ: Load address of layout
+		lea	(v_lvllayout).w,a4		; MJ: Load address of layout
 		move.w	#$4000,d2			; VRAM thing for selecting Plane A
 		; The FG's update function is inlined here
 		tst.b	(a2)
@@ -5025,12 +5023,11 @@ LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_screenposx).w,a3
-		movea.l	(v_lvllayout).w,a4	; MJ: Load address of layout
+		lea	(v_lvllayout).w,a4
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
 		lea	(v_bgscreenposx).w,a3
-		movea.l	(v_lvllayout).w,a4
-		lea	$80(a4),a4		; MJ: Load address of layout BG
+		lea	(v_lvllayout+$80).w,a4		; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		if Revision<>0
 			tst.b	(v_zone).w
@@ -5202,9 +5199,10 @@ LevelLayoutLoad:
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
 		lsr.w	#4,d0
-		lea	(Level_Index).l,a1
-		move.l	(a1,d0.w),(v_lvllayout).w	; MJ: save location of layout
-		rts				; MJ: Return
+		lea	(Level_Index).l,a0
+		move.l	(a0,d0.w),a0
+		lea	(v_lvllayout).w,a1
+		bra.w	KosDec			; MJ: decompress layout
 ; End of function LevelLayoutLoad
 
 		include	"_inc/DynamicLevelEvents.asm"
@@ -9012,53 +9010,49 @@ Level_Index:	dc.l Level_GHZ1	; MJ: unused data and BG data have been stripped ou
 
 Level_Null:
 
-Level_GHZ1:	binclude	"levels/ghz1.bin"
+Level_GHZ1:	binclude	"levels/ghz1.kos"
 		even
-Level_GHZ2:	binclude	"levels/ghz2.bin"
+Level_GHZ2:	binclude	"levels/ghz2.kos"
 		even
-Level_GHZ3:	binclude	"levels/ghz3.bin"
-		even
-
-Level_LZ1:	binclude	"levels/lz1.bin"
-		even
-Level_LZ2:	binclude	"levels/lz2.bin"
-		even
-Level_LZ3:	binclude	"levels/lz3.bin"
-		even
-Level_LZ3NoWall: binclude	"levels/lz3_nowall.bin"
-		even
-Level_SBZ3:	binclude	"levels/sbz3.bin"
+Level_GHZ3:	binclude	"levels/ghz3.kos"
 		even
 
-Level_MZ1:	binclude	"levels/mz1.bin"
+Level_LZ1:	binclude	"levels/lz1.kos"
 		even
-Level_MZ2:	binclude	"levels/mz2.bin"
+Level_LZ2:	binclude	"levels/lz2.kos"
 		even
-Level_MZ3:	binclude	"levels/mz3.bin"
+Level_LZ3:	binclude	"levels/lz3.kos"
 		even
-
-Level_SLZ1:	binclude	"levels/slz1.bin"
-		even
-Level_SLZ2:	binclude	"levels/slz2.bin"
-		even
-Level_SLZ3:	binclude	"levels/slz3.bin"
+Level_SBZ3:	binclude	"levels/sbz3.kos"
 		even
 
-Level_SYZ1:	binclude	"levels/syz1.bin"
+Level_MZ1:	binclude	"levels/mz1.kos"
 		even
-Level_SYZ2:	binclude	"levels/syz2.bin"
+Level_MZ2:	binclude	"levels/mz2.kos"
 		even
-Level_SYZ3:	binclude	"levels/syz3.bin"
-		even
-
-Level_SBZ1:	binclude	"levels/sbz1.bin"
-		even
-Level_SBZ2:	binclude	"levels/sbz2.bin"
+Level_MZ3:	binclude	"levels/mz3.kos"
 		even
 
-Level_End:	binclude	"levels/ending.bin"
+Level_SLZ1:	binclude	"levels/slz1.kos"
 		even
-Level_EndGood:	binclude	"levels/ending_good.bin"
+Level_SLZ2:	binclude	"levels/slz2.kos"
+		even
+Level_SLZ3:	binclude	"levels/slz3.kos"
+		even
+
+Level_SYZ1:	binclude	"levels/syz1.kos"
+		even
+Level_SYZ2:	binclude	"levels/syz2.kos"
+		even
+Level_SYZ3:	binclude	"levels/syz3.kos"
+		even
+
+Level_SBZ1:	binclude	"levels/sbz1.kos"
+		even
+Level_SBZ2:	binclude	"levels/sbz2.kos"
+		even
+
+Level_End:	binclude	"levels/ending.kos"
 		even
 
 Art_BigRing:	binclude	"artunc/Giant Ring.bin"

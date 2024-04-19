@@ -22,9 +22,9 @@ Page0 16x16 Page:      0
 Metatile Tiles Page 0: ..\map128\SYZ.kos
 
 Layout Format:         1
-Layout Compression:    0
+Layout Compression:    1
 BG 128x128 Page:       0
-BG Level Layout:       ..\levels\syz1.bin
+BG Level Layout:       ..\levels\syz1.kos
 
 Objects Format:        1
 Objects:               ..\objpos\syz1.bin

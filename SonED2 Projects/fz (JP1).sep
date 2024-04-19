@@ -22,9 +22,9 @@ Page0 16x16 Page:      0
 Metatile Tiles Page 0: ..\map128\SBZ (JP1).kos
 
 Layout Format:         1
-Layout Compression:    0
+Layout Compression:    1
 BG 128x128 Page:       0
-FG Level Layout:       ..\levels\sbz2.bin
+FG Level Layout:       ..\levels\sbz2.kos
 
 Objects Format:        1
 Objects:               ..\objpos\fz.bin
