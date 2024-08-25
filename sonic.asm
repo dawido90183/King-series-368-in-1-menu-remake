@@ -2031,62 +2031,84 @@ GM_Sega:
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)	; use 8-colour mode
+		move.w	#$8004,(a6)	; 8-colour mode
 		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
-		move.w	#$8700,(a6)	; set background colour (palette entry 0)
-		move.w	#$8B00,(a6)	; full-screen vertical scrolling
+		move.w	#$9001,(a6)	; 64-cell hscroll size
+		move.w	#$9200,(a6)	; window vertical position
+		move.w	#$8B03,(a6)
+		move.w	#$8720,(a6)	; set background colour (palette line 2, entry 0)
+;		move.w	#$8004,(a6)	; use 8-colour mode
+;		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
+;		move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
+;		move.w	#$8700,(a6)	; set background colour (palette entry 0)
+;		move.w	#$8B00,(a6)	; full-screen vertical scrolling
 		clr.b	(f_wtr_state).w
-		disable_ints
-		move.w	(v_vdp_buffer1).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+;		disable_ints
+;		move.w	(v_vdp_buffer1).w,d0
+;		andi.b	#$BF,d0
+;		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
-		locVRAM	ArtTile_Sega_Tiles*tile_size
-		lea	(Nem_SegaLogo).l,a0 ; load Sega	logo patterns
-		bsr.w	NemDec
-		lea	(v_256x256&$FFFFFF).l,a1
-		lea	(Eni_SegaLogo).l,a0 ; load Sega	logo mappings
-		move.w	#make_art_tile(ArtTile_Sega_Tiles,0,FALSE),d0
-		bsr.w	EniDec
+;		locVRAM	ArtTile_Sega_Tiles*tile_size
+;		lea	(Nem_SegaLogo).l,a0 ; load Sega	logo patterns
+;		bsr.w	NemDec
+		lea	(vdp_data_port).l,a6
+		locVRAM	ArtTile_Level_Select_Font*tile_size,4(a6)
+		lea	(Art_Text).l,a5	; load level select font
+		move.w	#(Art_Text_End-Art_Text)/2-1,d1
 
-		copyTilemap	v_256x256&$FFFFFF,vram_bg+$510,24,8
-		copyTilemap	(v_256x256+24*8*2)&$FFFFFF,vram_fg,40,28
-
-		if Revision<>0
-			tst.b   (v_megadrive).w	; is console Japanese?
-			bmi.s   .loadpal
-			copyTilemap	(v_256x256+$A40)&$FFFFFF,vram_fg+$53A,3,2 ; hide "TM" with a white rectangle
-		endif
-
-.loadpal:
-		moveq	#palid_SegaBG,d0
+.Tit_LoadText:
+		move.w	(a5)+,(a6)
+		dbf	d1,.Tit_LoadText	; load level select font
+;		lea	(v_256x256&$FFFFFF).l,a1
+;		lea	(Eni_SegaLogo).l,a0 ; load Sega	logo mappings
+;		move.w	#make_art_tile(ArtTile_Sega_Tiles,0,FALSE),d0
+;		bsr.w	EniDec
+;
+;		copyTilemap	v_256x256&$FFFFFF,vram_bg+$510,24,8
+;		copyTilemap	(v_256x256+24*8*2)&$FFFFFF,vram_fg,40,28
+;
+;		if Revision<>0
+;			tst.b   (v_megadrive).w	; is console Japanese?
+;			bmi.s   .loadpal
+;			copyTilemap	(v_256x256+$A40)&$FFFFFF,vram_fg+$53A,3,2 ; hide "TM" with a white rectangle
+;		endif
+;
+;.loadpal:
+		moveq	#palid_LevelSel,d0;palid_SegaBG,d0
 		bsr.w	PalLoad	; load Sega logo palette
-		move.w	#-$A,(v_pcyc_num).w
-		move.w	#0,(v_pcyc_time).w
-		move.w	#0,(v_pal_buffer+$12).w
-		move.w	#0,(v_pal_buffer+$10).w
+;		move.w	#-$A,(v_pcyc_num).w
+;		move.w	#0,(v_pcyc_time).w
+;		move.w	#0,(v_pal_buffer+$12).w
+;		move.w	#0,(v_pal_buffer+$10).w
 		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
+		bsr.w	LevSelTextLoad
+		bra.w	LevelSelect
+; ---------------------------------------------------------------------------
+; Level	Select
+; ---------------------------------------------------------------------------
 
-Sega_WaitPal:
-		move.b	#2,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		bsr.w	PalCycle_Sega
-		bne.s	Sega_WaitPal
+;LevelSelect:
 
-		move.b	#sfx_Sega,d0
-		bsr.w	PlaySound_Special	; play "SEGA" sound
-		move.b	#$14,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		move.w	#$1E,(v_demolength).w
-
+;Sega_WaitPal:
+;		move.b	#2,(v_vbla_routine).w
+;		bsr.w	WaitForVBla
+;		bsr.w	PalCycle_Sega
+;		bne.s	Sega_WaitPal
+;
+;		move.b	#sfx_Sega,d0
+;		bsr.w	PlaySound_Special	; play "SEGA" sound
+;		move.b	#$14,(v_vbla_routine).w
+;		bsr.w	WaitForVBla
+;		move.w	#$1E,(v_demolength).w
+;
 Sega_WaitEnd:
 		move.b	#2,(v_vbla_routine).w
 		bsr.w	WaitForVBla
-		tst.w	(v_demolength).w
-		beq.s	Sega_GotoTitle
+;		tst.w	(v_demolength).w
+;		beq.s	Sega_GotoTitle
 		andi.b	#btnStart,(v_jpadpress1).w ; is Start button pressed?
 		beq.s	Sega_WaitEnd	; if not, branch
 
