@@ -111,14 +111,14 @@ loc_E0:
 		dc.l ErrorTrap
 		dc.l ErrorTrap
 	endif
-		dc.b "SEGA MEGA DRIVE " ; Hardware system ID (Console name)
-		dc.b "(C)SEGA 1991.APR" ; Copyright holder and release date (generally year)
-		dc.b "SONIC THE               HEDGEHOG                " ; Domestic name
-		dc.b "SONIC THE               HEDGEHOG                " ; International name
+		dc.b "DMC RedKid      " ; Hardware system ID (Console name)
+		dc.b "(C)DMC  2007.MAY" ; Copyright holder and release date (generally year)
+		dc.b "SAMPLE PROGRAM                                  " ; Domestic name
+		dc.b "DMC-RK2-SLV                                     " ; International name
 		if Revision=0
-		dc.b "GM 00001009-00"   ; Serial/version number (Rev 0)
+		dc.b "GM 00000000-00"   ; Serial/version number (Rev 0)
 		else
-			dc.b "GM 00004049-01" ; Serial/version number (Rev non-0)
+			dc.b "GM 00000000-00" ; Serial/version number (Rev non-0)
 		endif
 Checksum:
 		if Revision=0
@@ -137,8 +137,8 @@ RomEndLoc:	dc.l EndOfRom-1		; End address of ROM
 		dc.l $20202020
 		endif
 		dc.l $20202020		; SRAM start ($200001)
-		dc.l $20202020		; SRAM end ($20xxxx)
-		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
+		dc.l $20202020		; SRAM end ($20xxxx)                  
+		dc.b "DEMONSTRATION PROGRAM                               " ; Notes (The firecore menu roms always have this for some reason so i assume this one does too)
 		dc.b "JUE             " ; Region (Country code)
 EndOfHeader:
 

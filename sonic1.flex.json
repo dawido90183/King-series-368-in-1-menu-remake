@@ -1,8 +1,33 @@
 {
     "Flex": 2,
     "name": "Sonic 1",
-    "node": "da472ab9-f363-45e6-8ee3-a83fd70d6d9c",
+    "node": "e03249ce-d5a0-4ecc-a8a8-0dc22f039276",
     "objects": [
+        {
+            "uuid": "e03249ce-d5a0-4ecc-a8a8-0dc22f039276",
+            "format": "Sonic 1.js",
+            "name": "Menu Text Font",
+            "palettes": [
+                {
+                    "path": "palette\\Level Select.bin",
+                    "length": 1
+                }
+            ],
+            "art": {
+                "path": "artunc\\menutext.bin",
+                "compression": "Uncompressed",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            }
+        },
         {
             "name": "Common",
             "children": [
